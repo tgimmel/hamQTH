@@ -26,7 +26,7 @@ sub get_info {
     my $qth = Ham::Resources::HamQTH->new(
                                 #callsign => $call,
                                 username => 'ky4j',
-                                password => 'mit930'
+                                password => ''
     );
    # my $sess = $qth->get_session();  Does not seem to work
     #print "Session is: $sess \n\n";

@@ -2,14 +2,14 @@
 use strict;
 use Ham::Resources::HamQTH;
 use Getopt::Std;
-
+use Data::Dumper;
 my ($input, $debug);
 
 our $opt_d;
 getopts('d');
 if ($opt_d) { $debug = 1; }
 
-open my $fh_log, "<", "RegularLogbook-KY4J.jdb";
+open my $fh_log, "<", "/home/tim/jLog-KY4J/RegularLogbook-KY4J.jdb";
 my ($line, $c, @logrec, $date, $time, $call, $band, $mode, %log, $qsoinfo);
 
 while ($line = <$fh_log>) {
@@ -29,7 +29,7 @@ while ()  {
    chomp($input = <STDIN>);
    if ($input eq "q" || $input eq "Q") { exit; }
    unless ($input) { print "Please enter a callsign! \n"; next; }
-    display_it(get_info($input));
+    display_it(get_info($input), (uc($input)));
     
 }
 
@@ -57,6 +57,7 @@ sub bio {
 }
 sub display_it {
    my $listing = shift;
+   my $callsign = shift;
    print "\nCountry: $listing->{ country }       Call: " . uc($listing->{ callsign }) . "\n";
    if ($listing->{ nick }) { print "Handle: $listing->{ nick } \n"; }
    if ($listing->{ adr_name }) { print "Name: $listing->{ adr_name } \n"; }
@@ -77,13 +78,13 @@ sub display_it {
    ($listing->{ qsl } eq 'Y') ? print "Mail QSL: Yes\n" : print "Mail QSL: No\n";
    print "\n";
    print "Previous QSO's:\n";
-   qsolookup($call);
+   qsolookup($callsign);
 }
 
 sub qsolookup {
     my $call = shift;
     foreach my $rec (@{$log { $call }}) {
-        print "$rec \n";
-    }
+         print "$rec \n";
+      }
 }
 

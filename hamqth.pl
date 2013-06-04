@@ -9,7 +9,20 @@ our $opt_d;
 getopts('d');
 if ($opt_d) { $debug = 1; }
 
+open my $fh_log, "<", "RegularLogbook-KY4J.jdb";
+my ($line, $c, @logrec, $date, $time, $call, $band, $mode, %log, $qsoinfo);
 
+while ($line = <$fh_log>) {
+    chomp($line);
+    $line =~ s/^\s+//g;
+    ($date, $time, $call, $band, $mode) = split(/;/,$line);
+    #Load the hash
+    $qsoinfo = "$date $time $band $mode";
+    $log{$call} = [] unless ($log{$call});  #Create empty array unless already done.
+    push (@{$log{$call}}, $qsoinfo);
+    $c++;
+}
+print "Loaded $c records.\n";
 
 while ()  {
    print "\nEnter callsign (q to exit): ";
@@ -61,5 +74,16 @@ sub display_it {
    if ($listing->{ qsl_via }) { print "QSL Mgr: $listing->{ qsl_via }\n";}
    ($listing->{ lotw } eq 'Y') ? print "LoTW: Yes\n" : print "LoTW: No\n";
    ($listing->{ eqsl } eq 'Y') ? print "eqsl: Yes\n" : print "eqsl: No\n";
-   ($listing->{ qsl } eq 'Y') ? print "Mail QSL: Yes\n" : print "Mail QSL: No\n";  
+   ($listing->{ qsl } eq 'Y') ? print "Mail QSL: Yes\n" : print "Mail QSL: No\n";
+   print "\n";
+   print "Previous QSO's:\n";
+   qsolookup($call);
 }
+
+sub qsolookup {
+    my $call = shift;
+    foreach my $rec (@{$log { $call }}) {
+        print "$rec \n";
+    }
+}
+
